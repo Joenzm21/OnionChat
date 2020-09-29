@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="Onion.Client.ChatUserListItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Onion.Client"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" Width="283.667">
+    <Grid>
+        <Border BorderThickness="0" Background="White" CornerRadius="20" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="281" Margin="2,0,0,0">
+            <Border Name ="Status" CornerRadius="90" BorderThickness="0" HorizontalAlignment="Left" Height="15" Margin="254,17,0,0" VerticalAlignment="Top" Width="15" RenderTransformOrigin="0.667,0.333"/>
+        </Border>
+        <TextBlock x:Name ="User"  HorizontalAlignment="Left" Margin="24,10,0,0" TextWrapping="Wrap" Style="{StaticResource CustomFont}" FontSize="17" Foreground="DodgerBlue" VerticalAlignment="Top"><Run Text="None"/><LineBreak/><Run/></TextBlock>
+        <TextBlock x:Name ="LastMessage" HorizontalAlignment="Left"
+                   Height="15" Margin="43,32,0,0" TextWrapping="Wrap"
+                   Style="{StaticResource CustomFont}" FontSize="10" 
+                   Foreground="DarkGray" VerticalAlignment="Top"
+                   Width="225" RenderTransformOrigin="-4.5,0.75"/>
+    </Grid>
+</UserControl>

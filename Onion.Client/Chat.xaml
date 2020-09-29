@@ -1,0 +1,95 @@
+﻿<Page x:Class="Onion.Client.Chat"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Onion.Client"
+      mc:Ignorable="d" 
+      KeyDown="Chat_KeyDown"
+      d:DesignHeight="425" d:DesignWidth="800"
+      Title="Chat">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
+        <Border Background="White" BorderBrush="DodgerBlue" BorderThickness="1" HorizontalAlignment="Left" Height="35" Margin="0,390,0,0" VerticalAlignment="Top" Width="500" Grid.Column="1"/>
+        <Label Name="Hint" 
+               Content="Write a message..." 
+               Foreground ="LightGray" 
+               HorizontalContentAlignment="Left" 
+               VerticalContentAlignment="Center" 
+               HorizontalAlignment="Left" Height="25" 
+               Margin="30,395,0,0" 
+               VerticalAlignment="Top" 
+               Width="108" 
+               RenderTransformOrigin="1.333,1.75" Grid.Column="1"/>
+        <TextBox Name ="MessageTextBox" TextChanged="MessageTextBox_TextChanged" 
+                 MinHeight="35" FocusManager.GotFocus="MessageTextBox_GotFocus"  
+                 CaretBrush="DodgerBlue"
+                 FocusManager.LostFocus="MessageTextBox_LostFocus" Background="Transparent"
+                 BorderThickness="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                 Style="{StaticResource CustomFont}" FontSize="17" Foreground="DodgerBlue"
+                 Margin="25,390,40,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" Height="35"/>
+        <Button Name="SendButton" Click="SendButton_Click" Cursor="Hand" Style="{StaticResource CustomButtonStyle}" IsEnabled="False" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="465,390,0,0" VerticalAlignment="Top" Width="35" Height="35" Grid.Column="1">
+            <Image Name="SendIcon" Source="Image/Disablesend.png" RenderOptions.BitmapScalingMode="HighQuality" Height="31.5" Width="31.5"/>
+        </Button>
+        <ListBox Name="Users" Cursor="Hand" BorderThickness="0"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  IsSynchronizedWithCurrentItem ="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
+                  Background="Transparent" HorizontalAlignment="Left"
+                  Height="348" Margin="0,54,0,18" VerticalAlignment="Bottom"
+                  Width="300" SelectionChanged="Users_SelectionChanged"
+                  SelectionMode="Single">
+            <ListBox.Resources>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <Border Name="Border" BorderBrush="DodgerBlue" BorderThickness="1" Padding="2" SnapsToDevicePixels="true">
+                                    <ContentPresenter />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="true">
+                                        <Setter TargetName="Border" Property="Background"
+                                            Value="{StaticResource SelectedColor}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.Resources>
+        </ListBox>
+        <Frame Name ="CFrame" HorizontalAlignment="Left" NavigationUIVisibility="Hidden" Height="390" VerticalAlignment="Top" Width="500" Grid.Column="1"/>
+        <Border CornerRadius="15"  Background="White" BorderThickness="0" HorizontalAlignment="Left" Height="30" Margin="12,16,0,0" VerticalAlignment="Top" Width="275"/>
+        <Label x:Name="HintS" 
+            Content="Search..." 
+            Foreground ="LightGray" 
+            HorizontalContentAlignment="Left" 
+            VerticalContentAlignment="Center" 
+            HorizontalAlignment="Left" Height="25" 
+            Margin="49,19,0,0" 
+            VerticalAlignment="Top" 
+            Width="52" 
+            RenderTransformOrigin="1.333,1.75"/>
+        <TextBox x:Name ="SearchBox" FocusManager.GotFocus="SearchBox_GotFocus"  
+            TextChanged="SearchBox_TextChanged" CaretBrush="DodgerBlue"
+            FocusManager.LostFocus="SearchBox_LostFocus" Background="Transparent"
+            BorderThickness="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+            Style="{StaticResource CustomFont}" FontSize="17" Foreground="DodgerBlue"
+            Margin="51,19,32,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="25"/>
+        <Image Source="Image/Search.png" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Left" Height="22" Margin="22,20,0,0" VerticalAlignment="Top" Width="21"/>
+        <ListBox Name="SearchListBox" GotFocus="SearchListBox_GotFocus"  SelectionChanged="SearchListBox_SelectionChanged" Foreground="DodgerBlue" Style="{StaticResource CustomFont}" FontSize="17" HorizontalAlignment="Left" Height="0" Margin="51,46,0,0" VerticalAlignment="Top" Width="217">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Height" Value="23" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+        <Button x:Name="CloseUser" Click="CloseUser_Click" Cursor="Hand" Style="{StaticResource CustomButtonStyle}" Visibility="Collapsed" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="455,10,0,0" VerticalAlignment="Top" Width="25" Height="25" Grid.Column="1">
+            <Image Source="Image/Close3.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+        </Button>
+    </Grid>
+</Page>

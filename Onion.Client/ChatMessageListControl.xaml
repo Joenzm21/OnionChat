@@ -1,0 +1,18 @@
+﻿<Page x:Class="Onion.Client.ChatMessageListControl"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Onion.Client"
+      mc:Ignorable="d" 
+      d:DesignHeight="390" d:DesignWidth="500"
+      Title="ChatMessageListControl">
+
+    <Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible" Name ="ScrollLC" HorizontalContentAlignment="Right" Margin="0,40,0,0">
+            <ItemsControl Name ="ListMessage"/>
+        </ScrollViewer>
+        <TextBlock Name ="Username" Text="None" FontSize="20" Style="{StaticResource CustomFont}" Foreground="DodgerBlue" TextAlignment="Center"  HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="300" Margin="100,6,0,0"/>
+        <Image x:Name="Status" RenderOptions.BitmapScalingMode="HighQuality" Margin="303,10,0,0" RenderTransformOrigin="2.477,0.636" Height="16" VerticalAlignment="Top" HorizontalAlignment="Left" Width="16"/>
+    </Grid>
+</Page>

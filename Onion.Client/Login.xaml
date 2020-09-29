@@ -1,0 +1,79 @@
+﻿ <Page x:Class="Onion.Client.Login"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d"
+      Title="Login" Height="118" Width="437">
+    <Grid Focusable="True" MouseDown="Grid_MouseDown" Name ="GFocus" Height="56" VerticalAlignment="Top">
+        <Border Name="LBorder" BorderThickness="2" BorderBrush= "DodgerBlue" Background="White" CornerRadius="25" Margin="0,63,0,-63"/>
+        <Label Name="HintUN" 
+               Content="Nick Name" 
+               Foreground ="LightGray" 
+               FontSize="20"
+               HorizontalContentAlignment="Center" 
+               VerticalContentAlignment="Center"
+               HorizontalAlignment="Left" Height="48" 
+               Margin="144,68,0,-60" 
+               VerticalAlignment="Top"
+               Width="150"
+               RenderTransformOrigin="1.333,1.75"/>
+        <TextBox x:Name="Nickname" 
+            Background="Transparent"
+			FontSize="20" Foreground="DodgerBlue"
+			CaretBrush="Transparent"
+            FocusManager.GotFocus="Nickname_GotFocus"
+            FocusManager.LostFocus="Nickname_LostFocus" 
+            Template="{StaticResource TextBoxBaseControlTemplate}"
+            KeyDown="Nickname_KeyDown"
+            HorizontalContentAlignment="Center" 
+            VerticalContentAlignment="Center"
+            HorizontalAlignment="Left" 
+            Height="51" 
+            Margin="66,66,0,-61" 
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="304"
+            RenderTransformOrigin="-1.429,0.143"/>
+        <Canvas Margin="66,66,0,-61">
+            <Border x:Name="Caret" 
+			CornerRadius="2"
+			Canvas.Left="153" 
+                Canvas.Top="11" 
+                Width="4" 
+                    Visibility="Collapsed"
+                Height="30" 
+                Background="DodgerBlue">
+                <Border.Triggers>
+                    <EventTrigger RoutedEvent="Border.Loaded">
+                        <BeginStoryboard>
+                            <Storyboard  x:Name="CaretStoryBoard" 
+                                         RepeatBehavior="Forever">
+                                <ColorAnimationUsingKeyFrames 
+
+                                        Storyboard.TargetProperty="Background.Color"
+
+                                        Duration="0:0:0:1"
+
+                                        FillBehavior="HoldEnd">
+                                    <ColorAnimationUsingKeyFrames.KeyFrames >
+                                        <DiscreteColorKeyFrame KeyTime="0:0:0.750" 
+                        Value="Transparent" />
+                                        <DiscreteColorKeyFrame KeyTime="0:0:0.000" 
+                        Value="DodgerBlue"/>
+                                    </ColorAnimationUsingKeyFrames.KeyFrames>
+                                </ColorAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Border.Triggers>
+            </Border>
+        </Canvas>
+        <Button Name="EnterButton" Click="EnterButton_Click" Style="{StaticResource CustomButtonStyle}" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Left" Margin="376,66,0,-61" VerticalAlignment="Top" Width="61" Height="51">
+            <Image Source="Image/Enter.png" Cursor="Hand" RenderOptions.BitmapScalingMode="HighQuality" Height="51" Width="51" RenderTransformOrigin="-5.937,-6.667"/>
+        </Button>
+        <Image Source="Image/User.png" HorizontalAlignment="Left" Height="51" VerticalAlignment="Top" Width="51" Margin="8,66,0,-61"/>
+        <Label HorizontalAlignment="Left" Height="46" Margin="46,10,0,0" FontSize="30" Foreground="DodgerBlue" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Style="{StaticResource CustomFont}" Content="Choose Your Nickname" VerticalAlignment="Top" Width="350"/>
+    </Grid>
+</Page>
+    

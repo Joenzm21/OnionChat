@@ -1,0 +1,15 @@
+<project outputDir="E:\Documents\Visual Studio 2019\Projects\OnionChat\Onion.Core\bin\Debug\Confused" baseDir="E:\Documents\Visual Studio 2019\Projects\OnionChat\Onion.Core\bin\Debug" xmlns="http://confuser.codeplex.com">
+  <rule pattern="true" preset="maximum" inherit="false">
+    <protection id="anti ildasm" />
+    <protection id="resources" action="remove" />
+    <protection id="anti tamper" />
+    <protection id="constants" />
+    <protection id="ctrl flow" />
+    <protection id="anti dump" />
+    <protection id="anti debug" action="remove" />
+    <protection id="invalid metadata" action="remove" />
+    <protection id="ref proxy" />
+    <protection id="rename" />
+  </rule>
+  <module path="Onion.Core.dll" />
+</project>

@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Onion.Server</RootNamespace>
     <AssemblyName>Onion.Server</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -36,9 +36,6 @@
   <ItemGroup>
     <Reference Include="Onion.Core">
       <HintPath>..\Onion.Core\obj\Debug\Onion.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Sodium.Core, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sodium.Core.1.2.3\lib\netstandard2.0\Sodium.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

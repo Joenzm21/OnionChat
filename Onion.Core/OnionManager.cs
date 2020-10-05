@@ -2,9 +2,6 @@
 using MessagePack;
 using Microsoft.Win32.SafeHandles;
 using Newtonsoft.Json;
-using NLog;
-using NLog.Config;
-using NLog.Targets;
 using Open.Nat;
 using ProtoBuf;
 using Sodium;
@@ -43,14 +40,14 @@ namespace Onion.Core
         public string ID { get => nickName + "#" + number.ToString("D" + NumberLength.ToString()); }
         public int UserCount { get => reverseNetworkMapping.Count; }
         public int PeerCount { get => peerList.Count; }
-        public List<OnionUser> UserList { get => IsClient ? reverseNetworkMapping.Keys.Where(j => j.ID != ID).ToList() 
-                : networkMapping.Reverse().Keys.Where(j => j.ID != ID).ToList();
+        public List<OnionUser> UserList
+        {
+            get => IsClient ? reverseNetworkMapping.Keys.Where(j => j.ID != ID).ToList()
+: networkMapping.Reverse().Keys.Where(j => j.ID != ID).ToList();
         }
         public OnionPeer[] PeerList { get => connectedPeerDictionary.Values.ToArray(); }
         public IPAddress ExternalIP { get; private set; } = IPAddress.Loopback;
         public OnionConfig Config { get; private set; }
-
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private readonly object lockObj = new object();
         private readonly List<string> usedID = new List<string>();
@@ -72,9 +69,6 @@ namespace Onion.Core
         private readonly byte[] defaultJoinPacket;
         private Mapping mapping;
         private readonly byte[] SecretKey = GenericHash.Hash(File.ReadAllBytes(Assembly.GetExecutingAssembly().Location.ToString()), null, 32);
-        private readonly LoggingConfiguration config;
-        private readonly FileTarget logFile;
-        private readonly ConsoleTarget logConsole;
         private readonly Dictionary<OnionUser, bool> sending = new Dictionary<OnionUser, bool>();
         private readonly string configPath;
         private readonly bool IsClient;
@@ -130,13 +124,6 @@ namespace Onion.Core
                 NATTraversal();
             }
 
-            config = new LoggingConfiguration();
-            logFile = new FileTarget("logfile") { FileName = Directory.GetCurrentDirectory() + "/Log/" + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + "." + manager.LocalPort + ".txt" };
-            logConsole = new ConsoleTarget("logconsole");
-            config.AddRule(LogLevel.Info, LogLevel.Fatal, logConsole);
-            config.AddRule(LogLevel.Debug, LogLevel.Fatal, logFile);
-            config.AddRule(LogLevel.Error, LogLevel.Fatal, logConsole);
-            LogManager.Configuration = config;
             SyncThread = new Thread(() => ServerSyncThread());
             SyncThread.Start();
 
@@ -152,7 +139,6 @@ namespace Onion.Core
                 IP = ExternalIP.GetAddressBytes(),
                 Port = (ushort)manager.LocalPort,
             };
-            logger.Info("Server Port: " + manager.LocalPort);
         }
         public async void NATTraversal()
         {
@@ -841,21 +827,12 @@ namespace Onion.Core
                 && (publicFlag != Flags.Register)
                 && (publicFlag != Flags.Response)
                 && (publicFlag != Flags.Link))
-            {
-                logger.Debug("Invaild Handshake. From: " + udpNetPeer.EndPoint.ToString() + ". Flag: " + publicFlag.ToString());
                 return;
-            }
             else if (uknpindex == -1)
                 if (!connectedPeerDictionary.TryGetValue(udpNetPeer, out onionPeer))
                     if (!connectedUserDictionary.TryGetValue(udpNetPeer, out onionUser) && !waitingpeer)
-                    {
-                        logger.Error("Unknown error");
                         return;
-                    }
-            if (!waitingpeer)
-                logger.Debug("Receive packet from: " + (uknpindex != -1 ? udpNetPeer.EndPoint.ToString() : onionPeer != null ? new IPEndPoint(new IPAddress(onionPeer.IP), onionPeer.Port).ToString() : onionUser.ID) +
-                                                   ", flag: " + publicFlag.ToString() +
-                                                   ", size: " + rawBytes.Length);
+
             try
             {
                 switch (publicFlag)
@@ -895,7 +872,6 @@ namespace Onion.Core
                                 RID = uDPIncomingPacket.RID,
                                 Payload = new byte[] { (byte)StatusCode.Already },
                             }), DeliveryMethod.ReliableOrdered);
-                            logger.Error("Peer is already exist");
                             unknownPeer.RemoveAll(c => c.Id == udpNetPeer.Id);
                             return;
                         }
@@ -927,16 +903,12 @@ namespace Onion.Core
                                 RID = uDPIncomingPacket.RID,
                                 Payload = new byte[] { (byte)StatusCode.BeDamaged },
                             }), DeliveryMethod.ReliableOrdered);
-                            logger.Error("Invaild Signature");
                             return;
                         }
                         RoutingPacket routingPacket = MessagePackSerializer.Deserialize<RoutingPacket>(
                             SealedPublicKeyBox.Open(uDPIncomingPacket.Payload, curve25519KeyPair));
                         if ((routingPacket.IP != null) && routingPacket.IP.SequenceEqual(itwasme.IP) && (routingPacket.Port == itwasme.Port))
-                        {
-                            logger.Error("Loop packet detected");
                             return;
-                        }
                         int pIndex = -1;
                         if ((routingPacket.IP != null) && (routingPacket.Port != 0))
                             pIndex = connectedPeerDictionary.ToList().FindIndex(c => (c.Value.IP.SequenceEqual(routingPacket.IP)) && (c.Value.Port == routingPacket.Port));
@@ -958,7 +930,6 @@ namespace Onion.Core
                                     RID = uDPIncomingPacket.RID,
                                     Payload = new byte[] { (byte)StatusCode.Invaild },
                                 }), DeliveryMethod.ReliableOrdered);
-                                logger.Error("Invaild Routing Packet");
                                 return;
                             }
                             NetPeer peer = Join(new IPEndPoint(new IPAddress(routingPacket.IP), routingPacket.Port));
@@ -971,7 +942,6 @@ namespace Onion.Core
                                     RID = uDPIncomingPacket.RID,
                                     Payload = new byte[] { (byte)StatusCode.Closed },
                                 }), DeliveryMethod.ReliableOrdered);
-                                logger.Error("the next relay is closed");
                                 return;
                             }
                             do
@@ -988,7 +958,6 @@ namespace Onion.Core
                                 Signature = PublicKeyAuth.SignDetached(routingPacket.Payload, ed25519KeyPair.PrivateKey),
                             });
                             peer.Send(bytes, DeliveryMethod.ReliableOrdered);
-                            logger.Debug("Routing to " + routingPacket.Port);
                             TimeoutRID(rID);
                         }
                         else if (pIndex > -1)
@@ -1007,7 +976,6 @@ namespace Onion.Core
                                 Signature = PublicKeyAuth.SignDetached(routingPacket.Payload, ed25519KeyPair.PrivateKey),
                             });
                             peerKVP.Key.Send(bytes, DeliveryMethod.ReliableOrdered);
-                            logger.Debug("Routing to " + routingPacket.Port);
                             TimeoutRID(rID);
                         }
                         else if (uIndex > -1)
@@ -1026,7 +994,6 @@ namespace Onion.Core
                                 Signature = PublicKeyAuth.SignDetached(routingPacket.Payload, ed25519KeyPair.PrivateKey),
                             });
                             userKVP.Key.Send(bytes, DeliveryMethod.ReliableOrdered);
-                            logger.Debug("Routing to " + routingPacket.ID);
                             TimeoutRID(rID);
                         }
                         break;
@@ -1067,7 +1034,6 @@ namespace Onion.Core
                                 RID = uDPIncomingPacket.RID,
                                 Payload = new byte[] { (byte)StatusCode.Error },
                             }), DeliveryMethod.ReliableOrdered);
-                            logger.Error("Refuse to establish a link");
                             unknownPeer.RemoveAll(c => c.Id == udpNetPeer.Id);
                             return;
                         }
@@ -1105,7 +1071,6 @@ namespace Onion.Core
                                 RID = uDPIncomingPacket.RID,
                                 Payload = null,
                             }), DeliveryMethod.ReliableOrdered);
-                            logger.Error("Refuse to register");
                             unknownPeer.RemoveAll(c => c.Id == udpNetPeer.Id);
                             return;
                         }
@@ -1137,10 +1102,7 @@ namespace Onion.Core
                         break;
                     case Flags.Response:
                         if (!requestDictionary.TryGetValue(uDPIncomingPacket.RID, out Tuple<Flags, object> tuple))
-                        {
-                            logger.Error("RID isn't found");
                             return;
-                        }
                         lock (requestDictionary)
                             requestDictionary.Remove(uDPIncomingPacket.RID);
                         switch (tuple.Item1)
@@ -1250,20 +1212,16 @@ namespace Onion.Core
         {
             Config.ServerList = peerList.Select(c => new IPAddress(c.IP).ToString() + ":" + c.Port.ToString()).ToArray();
             JsonSerializer jsonSerializer = new JsonSerializer();
-            using (TextWriter textWriter = new StreamWriter(configPath + ".new"))
-            using (JsonTextWriter jsonTextWriter = new JsonTextWriter(textWriter))
-                jsonSerializer.Serialize(jsonTextWriter, Config);
+            if (IsClient)
+                using (TextWriter textWriter = new StreamWriter(configPath + ".new"))
+                using (JsonTextWriter jsonTextWriter = new JsonTextWriter(textWriter))
+                    jsonSerializer.Serialize(jsonTextWriter, Config);
             SyncThread.Abort();
             if (disposed)
                 return;
             manager.Stop(true);
             if (mapping != null) natDevice.DeletePortMapAsync(mapping);
             ed25519KeyPair.Dispose();
-            if (!IsClient)
-            {
-                logConsole.Dispose();
-                logFile.Dispose();
-            }
             curve25519KeyPair.Dispose();
             handle.Dispose();
             disposed = true;
